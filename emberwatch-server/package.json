@@ -1,0 +1,15 @@
+{
+  "name": "emberwatch-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Wallet + purchase verification server for Emberwatch. No dependencies, needs Node 18+.",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test.js",
+    "sync-game": "cp ../emberwatch.html game.html",
+    "test:mp": "node mptest.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

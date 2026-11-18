@@ -1,0 +1,28 @@
+# Render Blueprint for the Emberwatch game server.
+# Put this file at the root of your Git repository (next to the emberwatch-server folder).
+services:
+  - type: web
+    name: emberwatch-server
+    runtime: node
+    rootDir: emberwatch-server
+    buildCommand: echo "no build needed"   # the server has no npm dependencies
+    startCommand: node server.js
+    healthCheckPath: /api/health
+    # A paid instance is required: free services lose all files on every restart (players would lose their Embers)
+    # and cannot attach a disk. Change the plan to the cheapest paid size shown in your Render dashboard if needed.
+    plan: standard          # 1 CPU, 2 GB, about $25 a month. If Render rejects this name, pick the 1 CPU / 2 GB plan in the dashboard
+    disk:
+      name: emberwatch-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: DATA_FILE
+        value: /var/data/db.json
+      - key: PLAY_PACKAGE
+        sync: false            # your Android package id, e.g. com.yourname.emberwatch
+      - key: GOOGLE_SERVICE_ACCOUNT_JSON
+        sync: false            # the whole service account JSON key
+      - key: DEVELOPER_NAME
+        value: Divyansh Dubey  # shown on the privacy policy page
+      - key: CONTACT_EMAIL
+        value: kinnudubey@gmail.com  # shown on the public privacy policy page
