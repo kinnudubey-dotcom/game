@@ -153,6 +153,12 @@ const server = http.createServer(async (req, res) => {
   const url = req.url.split('?')[0];
   try {
     if (req.method === 'OPTIONS') return send(res, 204);
+    if (req.method === 'GET' && (url === '/' || url === '/index.html' || url === '/play')) {
+      /* Opens the game in any browser, already connected to this server. */
+      let html = fs.readFileSync(path.join(__dirname, 'game.html'), 'utf8');
+      html = html.replace('<script>', '<script>window.EMBER_API=location.origin;</script>\n<script>');
+      res.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-cache' }); return res.end(html);
+    }
     if (req.method === 'GET' && (url === '/privacy' || url === '/privacy-policy')) {
       let html = fs.readFileSync(path.join(__dirname, 'privacy.html'), 'utf8');
       html = html.split('{{DEVELOPER}}').join(esc(process.env.DEVELOPER_NAME || '[set DEVELOPER_NAME]')).split('{{EMAIL}}').join(esc(process.env.CONTACT_EMAIL || '[set CONTACT_EMAIL]'));
