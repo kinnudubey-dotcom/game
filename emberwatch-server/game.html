@@ -1055,6 +1055,14 @@ $('bm').textContent=cfg.sound?'Sound':'Muted';
 initLobby();requestAnimationFrame(loop);
 document.addEventListener('deviceready',()=>{initPlay();syncWallet()});if(window.CdvPurchase){initPlay()}syncWallet();
 window.__dbg={get F(){return F},get me(){return me},get zs(){return zs},get score(){return score},get state(){return state},get scene(){return scene}};
+
+/* first-start privacy notice */
+(function(){let ok=0;try{ok=localStorage.getItem('emberwatch-priv')}catch(e){}if(ok)return;
+ const d=document.createElement('div');d.style.cssText='position:fixed;inset:0;z-index:99;background:rgba(10,6,14,.92);display:flex;align-items:center;justify-content:center;padding:16px';
+ d.innerHTML='<div style="max-width:340px;background:#2a1f33;border:3px solid #f0d9b5;padding:16px;text-align:center;color:#f0d9b5;font:600 14px system-ui,sans-serif"><div style="font-size:18px;margin-bottom:8px">Welcome to Emberwatch</div><div style="margin-bottom:12px">We save a random player ID, your Embers and purchases on our server. No name, email or location. By playing you agree to our privacy policy.</div><button id="pvr" style="margin:4px;padding:8px 12px">Read policy</button><button id="pvo" style="margin:4px;padding:8px 12px;background:#c8962a;font-weight:700">OK, play</button></div>';
+ document.body.appendChild(d);
+ d.querySelector('#pvr').onclick=()=>{try{window.open((window.EMBER_API||location.origin)+'/privacy','_blank')}catch(e){}};
+ d.querySelector('#pvo').onclick=()=>{try{localStorage.setItem('emberwatch-priv','1')}catch(e){}d.remove()}})();
 </script>
 </body>
 </html>
