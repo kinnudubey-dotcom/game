@@ -363,7 +363,13 @@ TILES.forEach(([ox,oy])=>{
  PR0.forEach(o=>{const n=Object.assign({},o,{x:o.x+ox,y:o.y+oy});if(hubNear(n.x,n.y,n.w,n.h))return;if(n.t==='tree'){n.hp=4;n.rt=0}PR.push(n)});
  BU0.forEach(o=>{const n=Object.assign({},o,{x:o.x+ox,y:o.y+oy});if(!hubNear(n.x-6,n.y-6,12,12))BU.push(n)});
  OBB.forEach(o=>OB.push({x:o.x+ox,y:o.y+oy,w:o.w,h:o.h}));
- LT0.forEach(o=>LT.push({x:o.x+ox,y:o.y+oy}))});
+ LT0.forEach(o=>LT.push({x:o.x+ox,y:o.y+oy}));
+ /* extra scenery so the bigger map does not feel empty */
+ const rr=rnd(777+ox*3+oy*7+1),KT=[['crate',12,8,8],['crate',10,8,7],['crate',10,7,6],['dump',24,10,10],['tree',4,3,0],['tree',4,3,0],['tree',4,3,0],['tree',4,3,0],['slab',26,6,8],['slab',16,6,7],['tire',10,8,5],['fbar',7,6,9],['bar',7,6,8],['sand',22,5,5],['sand',5,16,5]];
+ const spot=(w,h)=>{for(let n=0;n<40;n++){const x=ox+14+rr()*(W-28-w),y=oy+34+rr()*(H-52-h),ry=y-oy;if(ry+h>112&&ry<154)continue;if(hubNear(x-6,y-6,w+12,h+12))continue;if(PR.some(o=>x<o.x+o.w+8&&x+w>o.x-8&&y<o.y+o.h+8&&y+h>o.y-8))continue;if(OBB.some(o=>x<o.x+ox+o.w+10&&x+w>o.x+ox-10&&y<o.y+oy+o.h+10&&y+h>o.y+oy-10))continue;return[x|0,y|0]}return null};
+ for(let i=0;i<18;i++){const k=KT[rr()*KT.length|0],pt=spot(k[1],k[2]);if(!pt)continue;const n=q(k[0],pt[0],pt[1],k[1],k[2],k[3]);if(n.t==='tree'){n.hp=4;n.rt=0}PR.push(n)}
+ for(let i=0;i<5;i++){const pt=spot(10,8);if(pt)BU.push({x:pt[0]+5,y:pt[1]+6,b:1,rt:0})}
+ for(let i=0;i<2;i++){const pt=spot(8,8);if(pt)LT.push({x:pt[0],y:pt[1]})}});
 PR.forEach(o=>OB.push(o));
 const ASH=Array.from({length:40},(_,i)=>({x:(i*47)%VW,y:(i*83)%H,s:.4+(i%5)*.25}));
 function push(e){OB.forEach(o=>{const l=e.x-(o.x-3),r=o.x+o.w+3-e.x,t=e.y-(o.y-1),b=o.y+o.h+2-e.y;if(l>0&&r>0&&t>0&&b>0){const m=Math.min(l,r,t,b);if(m===l)e.x-=l;else if(m===r)e.x+=r;else if(m===t)e.y-=t;else e.y+=b}})}
@@ -534,11 +540,13 @@ function drawFire(){const x=TX+26,y=TY+4;g.fillStyle='rgba(0,0,0,.35)';g.fillRec
 function drawTable(){const x=TX,y=TY;g.fillStyle='rgba(0,0,0,.35)';g.fillRect(x-10,y-1,20,4);g.fillStyle='#4a2f18';g.fillRect(x-8,y-6,2,6);g.fillRect(x+6,y-6,2,6);g.fillStyle='#8a5a2e';g.fillRect(x-10,y-11,20,6);g.fillStyle='#a8703a';g.fillRect(x-10,y-11,20,2);g.fillStyle='#9aa4a8';g.fillRect(x-6,y-14,4,4);g.fillStyle='#6b4423';g.fillRect(x-1,y-13,6,2);g.fillStyle='#c0504d';g.fillRect(x+6,y-12,3,2)}
 function drawBases(){[0,1].forEach(t=>{const c=CLR[teamCol[t]].b,x=t?X1-44:X0;g.fillStyle=c;g.globalAlpha=.13;g.fillRect(x,Y0,54,Y1-Y0);g.globalAlpha=1;
  const fx=t?X1-6:X0+4,fy=Y0+24;g.fillStyle='#1a0f14';g.fillRect(fx-1,fy-17,3,18);g.fillStyle=c;const wv=Math.round(Math.sin(T*4+t)*1);g.fillRect(fx+(t?-9:2),fy-16,8,5+wv);g.fillStyle='#1a0f14';g.fillRect(fx+(t?-9:2),fy-11+wv,8,1)})}
+let camT=0;
 function camUpdate(){
+ const nw=performance.now(),cdt=Math.min(.05,Math.max(.001,(nw-camT)/1000));camT=nw;
  const f=scene==='lobby'?null:me;let tx=LX-(VW-W)/2,ty=LY;
  if(f){tx=f.x-VW/2;ty=f.y-H/2+4}
  tx=Math.max(0,Math.min(WW-VW,tx));ty=Math.max(0,Math.min(WH-H,ty));
- if(camSnap||!f){cam.x=tx;cam.y=ty;camSnap=false}else{cam.x+=(tx-cam.x)*.2;cam.y+=(ty-cam.y)*.2}
+ if(camSnap||!f){cam.x=tx;cam.y=ty;camSnap=false}else{const k=1-Math.exp(-cdt*4.2);cam.x+=(tx-cam.x)*k;cam.y+=(ty-cam.y)*k}
  camX=Math.round(cam.x);camY=Math.round(cam.y)}
 function draw(){g.save();g.fillStyle='#0d0a10';g.fillRect(0,0,VW,H);camUpdate();if(shake>.1&&cfg.shake)g.translate(((Math.random()-.5)*shake*2)|0,((Math.random()-.5)*shake*2)|0);draw0();g.restore()}
 function setView(vw){if(vw===VW)return;VW=vw;cv.width=VW;cv.style.aspectRatio=VW+'/'+H;g.imageSmoothingEnabled=false;VIG=mkVIG(VW);dk.width=VW}
