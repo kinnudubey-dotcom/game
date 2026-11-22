@@ -16,7 +16,7 @@ body{display:flex;flex-direction:column;align-items:center;justify-content:cente
 .chip{display:flex;align-items:center;gap:6px}.chip b{width:11px;height:11px;display:inline-block}
 .dots{display:flex;gap:2px}.dots u{width:7px;height:12px;display:block;text-decoration:none}
 #stage{position:relative}
-canvas{width:100%;aspect-ratio:16/9;image-rendering:pixelated;display:block;border:3px solid var(--line);background:#000;cursor:crosshair;touch-action:none}
+canvas{width:100%;aspect-ratio:16/9;image-rendering:pixelated;display:block;border:0;background:#000;cursor:crosshair;touch-action:none}
 .ov{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(14,9,16,.88);padding:10px;z-index:3}
 .ov.on{display:flex}
 .box{background:var(--panel);border:3px solid var(--rust);padding:16px;max-width:480px;width:100%;max-height:100%;overflow:auto}
@@ -549,7 +549,7 @@ function camUpdate(){
  if(camSnap||!f){cam.x=tx;cam.y=ty;camSnap=false}else{const k=1-Math.exp(-cdt*4.2);cam.x+=(tx-cam.x)*k;cam.y+=(ty-cam.y)*k}
  camX=Math.round(cam.x);camY=Math.round(cam.y)}
 function draw(){g.save();g.fillStyle='#0d0a10';g.fillRect(0,0,VW,H);camUpdate();if(shake>.1&&cfg.shake)g.translate(((Math.random()-.5)*shake*2)|0,((Math.random()-.5)*shake*2)|0);draw0();g.restore()}
-function setView(vw){if(vw===VW)return;VW=vw;cv.width=VW;cv.style.aspectRatio=VW+'/'+H;g.imageSmoothingEnabled=false;VIG=mkVIG(VW);dk.width=VW}
+function setView(vw){if(vw===VW)return;VW=vw;cv.width=VW;g.imageSmoothingEnabled=false;VIG=mkVIG(VW);dk.width=VW}
 function draw0(){
 sun();g.save();g.translate(-camX,-camY);g.drawImage(bg,0,0);
 if(scene==='team')drawBases();
@@ -1044,8 +1044,8 @@ addEventListener('blur',()=>{if(state==='play')togglePause()});
 function fit(){const w=$('wrap'),h=$('hud');w.style.width=innerWidth+'px';
  for(let i=0;i<3;i++){const hh=getComputedStyle(h).display==='none'?0:h.offsetHeight,ah=Math.max(120,innerHeight-hh-6),asp=innerWidth/ah;
   /* wide phones: show extra ground at the sides instead of black bars */
-  setView(Math.max(W,Math.min(440,2*Math.floor(H*asp/2))));
-  w.style.width=Math.max(200,Math.floor(Math.min(innerWidth,ah*VW/H)))+'px'}}
+  setView(Math.max(W,Math.min(640,2*Math.ceil(H*asp/2))));
+  w.style.width=innerWidth+'px';cv.style.aspectRatio=innerWidth+'/'+ah}}
 addEventListener('resize',fit);addEventListener('orientationchange',fit);setInterval(fit,400);fit();
 function loop(t){const dt=Math.min(.05,(t-last)/1000);last=t;T=t/1000;
  ptr.x=psx+camX;ptr.y=psy+camY;
